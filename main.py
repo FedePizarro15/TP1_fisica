@@ -40,7 +40,7 @@ def propagacion_de_errores(diametros: np.array, diametros_i: np.array, masas: np
     
     return diametros_i_ln, masas_i_ln
 
-def graficar_promedios(diametros: np.array, masas: np.array, diametros_i: np.array, masas_i: np.array, escala_log: bool, ajuste_lineal: bool):
+def graficar_promedios(diametros: np.array, masas: list, diametros_i: np.array, masas_i: np.array, escala_log: bool, ajuste_lineal: bool, mismo_grafico: bool):
     masas = np.array(masas, dtype=float)
     diametros = np.array(diametros, dtype=float)
     diametros_i = np.array(diametros_i, dtype=float)
@@ -53,13 +53,31 @@ def graficar_promedios(diametros: np.array, masas: np.array, diametros_i: np.arr
         diametros = np.log(diametros)
         xlabel_ += " log"
         ylabel_ += " log"
-    
-    plt.errorbar(masas, diametros, yerr=diametros_i, xerr=masas_i, fmt=".", color="c", label="Desviación estándar")
+        
+    if mismo_grafico:
+        plt.errorbar(masas, diametros, yerr=diametros_i, xerr=masas_i, fmt=".", color="c", label="Desviación estándar L")
+    else:
+        plt.errorbar(masas[:10], diametros[:10], yerr=diametros_i[:10], xerr=masas_i[:10], fmt=".", color="c", label="Desviación estándar L")
+        plt.errorbar(masas[10:15], diametros[10:15], yerr=diametros_i[10:15], xerr=masas_i[10:15], fmt=".", color="m", label="Desviación estándar M")
+        plt.errorbar(masas[15:20], diametros[15:20], yerr=diametros_i[15:20], xerr=masas_i[15:20], fmt=".", color="green", label="Desviación estándar P")
     
     if ajuste_lineal:
-        m, b = np.polyfit(masas, diametros, 1)
-        y_fit = m * masas + b
-        plt.plot(masas, y_fit, color="red", label=f'Ajuste lineal: y = {m:.2f}x + {b:.2f}')
+        if mismo_grafico:
+            m, b = np.polyfit(masas, diametros, 1)
+            y_fit = m * masas + b
+            plt.plot(masas, y_fit, color="c", label=f'Ajuste lineal L: y = {m:.2f}x + {b:.2f}')
+        else:
+            m, b = np.polyfit(masas[:10], diametros[:10], 1)
+            y_fit = m * masas[:10] + b
+            plt.plot(masas[:10], y_fit, color="c", label=f'Ajuste lineal L: y = {m:.2f}x + {b:.2f}')
+            
+            m, b = np.polyfit(masas[10:15], diametros[10:15], 1)
+            y_fit = m * masas[10:15] + b
+            plt.plot(masas[10:15], y_fit, color="m", label=f'Ajuste lineal M: y = {m:.2f}x + {b:.2f}')
+            
+            m, b = np.polyfit(masas[15:20], diametros[15:20], 1)
+            y_fit = m * masas[15:20] + b
+            plt.plot(masas[15:20], y_fit, color="green", label=f'Ajuste lineal P: y = {m:.2f}x + {b:.2f}')
         
     plt.xlabel(xlabel_)
     plt.ylabel(ylabel_)
@@ -74,7 +92,8 @@ def main():
                        incertidumbres_diametro(diametros_()[1]), 
                        incertidumbres_masas(), 
                        escala_log=True, 
-                       ajuste_lineal=True)
+                       ajuste_lineal=True,
+                       mismo_grafico=False)
     
 if __name__ == "__main__":
     main()
