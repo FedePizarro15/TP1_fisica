@@ -19,8 +19,8 @@ def diametros_(archivo = "Trabajo Práctico 1.xlsx") -> tuple[np.array, np.array
 
 def incertidumbres_diametro(diametros_std):
     diametros_i = []
-    for i in range(len(diametros_std)):
-        diametros_i.append(np.sqrt(0.0025 + (diametros_std[i] / np.sqrt(3))))
+    for i in diametros_std:
+        diametros_i.append(np.sqrt(0.0025 + (i / np.sqrt(3)) ** 2))
     return np.array(diametros_i)
 
 def incertidumbres_masas():
